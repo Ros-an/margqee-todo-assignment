@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import RecycleBinIcon from "../../assets/RecycleBinIcon";
-import PlusRoundLineIcon from "../../assets/PlusRoundLineIcon";
-import MemoEllipseShapeLineIcon from "../../assets/EllipseShapeLineIcon";
-import MemoGreenCheckmarkLineIcon from "../../assets/GreenCheckmarkLineIcon";
-import MemoTriangleBottomArrowIcon from "../../assets/TriangleBottomArrowIcon";
-import { BaseTodoProps, TodoProps } from "../../context/GlobalContext";
+import RecycleBinIcon from "../assets/RecycleBinIcon";
+import PlusRoundLineIcon from "../assets/PlusRoundLineIcon";
+import MemoEllipseShapeLineIcon from "../assets/EllipseShapeLineIcon";
+import MemoGreenCheckmarkLineIcon from "../assets/GreenCheckmarkLineIcon";
+import MemoTriangleBottomArrowIcon from "../assets/TriangleBottomArrowIcon";
+import { BaseTodoProps, TodoProps } from "../context/GlobalContext";
+import CounterIcon from "./CounterIcon";
 
 interface TodoItemProps {
     todo: TodoProps;
@@ -72,6 +73,11 @@ function TodoItem({
                 </div>
                 <div className="flex gap-4 items-center">
                     {/* show drop down btn only if expand  true or subtask more than 0 */}
+                    {
+                        todo.children.length > 0 && (
+                            <CounterIcon count={todo.children.length} />
+                        )
+                    }
                     {(expand || todo.children.length > 0) && (
                         <button
                             type="button"

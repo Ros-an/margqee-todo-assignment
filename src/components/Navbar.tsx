@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../utils/auth";
-import { useGlobalContext } from "../../context/GlobalContext";
-import MemoShutdownIcon from "../../assets/ShutdownIcon";
+import { logout } from "../utils/auth";
+import { useGlobalContext } from "../context/GlobalContext";
+import MemoShutdownIcon from "../assets/ShutdownIcon";
 import { toast } from "react-toastify";
 
 export default function Navbar() {

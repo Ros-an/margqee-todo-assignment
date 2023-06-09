@@ -5,13 +5,13 @@ import {
     useGlobalContext,
 } from "../../context/GlobalContext";
 import { v4 as uuidv4 } from "uuid";
-import TodoItem from "../../components/TodoItem/TodoItem";
+import TodoItem from "../../components/TodoItem";
 import {
     findOneUnChecked,
     updateAllSubTodoIsChecked,
     updateSpecificSubTodoIsChecked,
 } from "../../utils/general";
-import Navbar from "../../components/Navbar/Navbar";
+import Navbar from "../../components/Navbar";
 
 //add toast
 function Dashboard() {
