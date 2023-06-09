@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { login, saveToken } from "../../utils/auth";
-import { useNavigate } from "react-router-dom";
+import { isAuthenticated, login, saveToken } from "../../utils/auth";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useGlobalContext } from "../../context/GlobalContext";
+import { USER_INFO } from "../../contants";
 
 function Login() {
     const navigate = useNavigate();
+    const { setUserData } = useGlobalContext();
     const [inputFields, setInputFields] = useState({
         username: "",
         password: "",
@@ -18,14 +21,20 @@ function Login() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
+            const { username, password } = inputFields;
             const token = await login({
-                password: inputFields.password,
-                username: inputFields.username,
+                password,
+                username,
             });
             saveToken(token, () => navigate("/"));
+            setUserData(prev => ({ ...prev, username, password }));
+            localStorage.setItem(USER_INFO, username);
         } catch (error) {
             console.log('error', error);
         }
+    }
+    if (isAuthenticated()) {
+        return <Navigate to="/" replace />
     }
     return (
         <section className="flex min-h-screen items-center justify-center bg-yellow-50">

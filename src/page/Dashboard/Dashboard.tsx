@@ -7,10 +7,14 @@ import {
     updateAllSubTodoIsChecked,
     updateSpecificSubTodoIsChecked,
 } from "../../utils/general";
+import { logout } from "../../utils/auth";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/Navbar/Navbar";
 
 //add toast
 function Dashboard() {
-    const { todos, setTodos } = useGlobalContext();
+    const navigate = useNavigate();
+    const { todos, setTodos, userData } = useGlobalContext();
     const [rootText, setRootText] = useState("");
 
     const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,6 +31,7 @@ function Dashboard() {
         ]);
         setRootText("");
     };
+    console.log("userdata", userData);
     const handleAddSubTodo = (parentId: number, childTodo: any) => {
         setTodos((prev: any) => {
             return prev.map((todo: any) =>
@@ -86,6 +91,7 @@ function Dashboard() {
     };
     return (
         <section className="flex flex-col min-h-screen items-center justify-start gap-10">
+            <Navbar />
             <div className="w-[100%] sm:w-[70vw] md:w-[60vw] lg:w-[50vw]">
                 <form onSubmit={handleAddTodo}>
                     <div className="relative mb-8">

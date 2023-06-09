@@ -1,4 +1,4 @@
-import { JWT_TOKEN } from "../contants";
+import { JWT_TOKEN, USER_INFO } from "../contants";
 import userDatabase from "../users.json";
 interface LoginProps {
     username: string;
@@ -29,8 +29,10 @@ export const saveToken = (token: string, navigate: () => void) => {
     localStorage.setItem(JWT_TOKEN, token);
     navigate();
 };
-export const logout = () => {
+
+export const logout = (callback:()=> void) => {
     localStorage.removeItem(JWT_TOKEN);
+    callback();
 };
 export const isAuthenticated = () => {
     const token = localStorage.getItem(JWT_TOKEN); // if present returns token else null
