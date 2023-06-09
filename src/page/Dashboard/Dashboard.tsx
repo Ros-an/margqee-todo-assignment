@@ -147,7 +147,7 @@ function Dashboard() {
                 </form>
 
                 {/* List all Root Todo */}
-                <div className="px-4">
+                <div className="px-4 max-h-[70vh] overflow-x-auto">
                     {todos.map((todo: any) => (
                         <TodoItem
                             key={todo.id}
