@@ -125,7 +125,7 @@ function Dashboard() {
             <Navbar />
 
             {/* UI for Root Todo Input Box */}
-            <div className="w-[100%] sm:w-[70vw] md:w-[60vw] lg:w-[50vw]">
+            <div className="w-[100%] px-4 sm:w-[70vw] sm:px-0 md:w-[50vw] lg:w-[40vw]">
                 <form onSubmit={handleAddTodo}>
                     <div className="relative mb-8">
                         <input
