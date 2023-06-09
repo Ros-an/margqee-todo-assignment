@@ -3,6 +3,7 @@ import { isAuthenticated, login, saveToken } from "../../utils/auth";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { USER_INFO } from "../../contants";
+import { toast } from "react-toastify";
 
 function Login() {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ function Login() {
         username: "",
         password: "",
     });
+
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         setInputFields((prev) => ({
@@ -18,6 +20,8 @@ function Login() {
             [name]: value,
         }));
     };
+
+    // invoked on login, and veifies the user
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
@@ -29,10 +33,13 @@ function Login() {
             saveToken(token, () => navigate("/"));
             setUserData(prev => ({ ...prev, username, password }));
             localStorage.setItem(USER_INFO, username);
+            toast.success("Logged In Successfully!")
         } catch (error) {
             console.log('error', error);
+            toast.error("Invalid Credentials!")
         }
     }
+    // In case logged in use try to access log in page
     if (isAuthenticated()) {
         return <Navigate to="/" replace />
     }

@@ -1,40 +1,46 @@
-import React, { useId, useState } from "react";
-import { useGlobalContext } from "../../context/GlobalContext";
+import React, { useState } from "react";
+import {
+    BaseTodoProps,
+    TodoProps,
+    useGlobalContext,
+} from "../../context/GlobalContext";
 import { v4 as uuidv4 } from "uuid";
-import Sidebar from "../../section/Sidebar/Sidebar";
 import TodoItem from "../../components/TodoItem/TodoItem";
 import {
+    findOneUnChecked,
     updateAllSubTodoIsChecked,
     updateSpecificSubTodoIsChecked,
 } from "../../utils/general";
-import { logout } from "../../utils/auth";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
 
 //add toast
 function Dashboard() {
-    const navigate = useNavigate();
-    const { todos, setTodos, userData } = useGlobalContext();
+    const { todos, setTodos } = useGlobalContext();
     const [rootText, setRootText] = useState("");
 
+    // adds todo entry to list of todos
     const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const id = uuidv4();
-        setTodos((prevTodos: any) => [
-            ...prevTodos,
+        const entry: TodoProps = {
+            id,
+            text: rootText,
+            isChecked: false,
+            children: [],
+        };
+        setTodos((prev: TodoProps[]) => [
+            ...prev,
             {
-                id,
-                text: rootText,
-                isChecked: false,
-                children: [],
+                ...entry,
             },
         ]);
         setRootText("");
     };
-    console.log("userdata", userData);
-    const handleAddSubTodo = (parentId: number, childTodo: any) => {
-        setTodos((prev: any) => {
-            return prev.map((todo: any) =>
+
+    // adds subtodo to its root todo
+    const handleAddSubTodo = (parentId: string, childTodo: BaseTodoProps) => {
+        setTodos((prev: TodoProps[]) => {
+            return prev.map((todo: TodoProps) =>
                 todo.id === parentId
                     ? {
                         ...todo,
@@ -46,18 +52,39 @@ function Dashboard() {
         });
     };
 
-    const handleDelete = (todoId: number) => {
-        setTodos((prev: any) => prev.filter((todo: any) => todo.id !== todoId));
+    // remove todo and subtodo depending on id passed
+    const handleDelete = (todoId: string, subTodoId?: string) => {
+        if (subTodoId) {
+            setTodos((prev: TodoProps[]) =>
+                prev.map((todo: TodoProps) => {
+                    if (todo.id === todoId) {
+                        const updateSubTodo = todo.children.filter(
+                            (subTodo: BaseTodoProps) => subTodo.id !== subTodoId
+                        );
+                        return {
+                            ...todo,
+                            children: updateSubTodo,
+                            isChecked: !findOneUnChecked(updateSubTodo),
+                        };
+                    } else {
+                        return todo;
+                    }
+                })
+            );
+        } else {
+            setTodos((prev: TodoProps[]) => prev.filter((todo: TodoProps) => todo.id !== todoId));
+        }
     };
 
+    // manages check functionality, whether subtask or root task is checked
     const updateIsChecked = (
         flag: string,
-        parentId: number,
-        childId?: number
+        parentId: string,
+        childId?: string
     ) => {
         if (flag === "parent") {
-            setTodos((prev: any) => {
-                const updatedTodos = prev.map((todo: any) =>
+            setTodos((prev: TodoProps[]) => {
+                const updatedTodos = prev.map((todo: TodoProps) =>
                     todo.id === parentId
                         ? {
                             ...todo,
@@ -73,18 +100,22 @@ function Dashboard() {
             });
         }
         if (flag === "child" && childId) {
-            setTodos((prev: any) => {
-                const updatedTodos = prev.map((todo: any) =>
-                    todo.id === parentId
-                        ? {
+            setTodos((prev: TodoProps[]) => {
+                const updatedTodos = prev.map((todo: TodoProps) => {
+                    if (todo.id === parentId) {
+                        const updatedChildren = updateSpecificSubTodoIsChecked(
+                            childId,
+                            todo.children
+                        );
+                        return {
                             ...todo,
-                            children: updateSpecificSubTodoIsChecked(
-                                childId,
-                                todo.children
-                            ),
-                        }
-                        : todo
-                );
+                            isChecked: !findOneUnChecked(updatedChildren),
+                            children: updatedChildren,
+                        };
+                    } else {
+                        return todo;
+                    }
+                });
                 return updatedTodos;
             });
         }
@@ -92,6 +123,8 @@ function Dashboard() {
     return (
         <section className="flex flex-col min-h-screen items-center justify-start gap-10">
             <Navbar />
+
+            {/* UI for Root Todo Input Box */}
             <div className="w-[100%] sm:w-[70vw] md:w-[60vw] lg:w-[50vw]">
                 <form onSubmit={handleAddTodo}>
                     <div className="relative mb-8">
@@ -101,6 +134,8 @@ function Dashboard() {
                             onChange={(e: any) => setRootText(e.target.value)}
                             placeholder="Enter task"
                             className="min-h-[3rem] w-full rounded-full px-4 text-base font-medium placeholder:text-ipColor border-solid border border-btnBg"
+                            required
+                            pattern=".*"
                         />
                         <button
                             type="submit"
@@ -110,6 +145,8 @@ function Dashboard() {
                         </button>
                     </div>
                 </form>
+
+                {/* List all Root Todo */}
                 <div className="px-4">
                     {todos.map((todo: any) => (
                         <TodoItem

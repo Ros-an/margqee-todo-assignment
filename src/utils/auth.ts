@@ -1,9 +1,11 @@
-import { JWT_TOKEN, USER_INFO } from "../contants";
+import { JWT_TOKEN } from "../contants";
 import userDatabase from "../users.json";
 interface LoginProps {
     username: string;
     password: string;
 }
+
+// mock login functionality using Promise
 export const login: ({
     password,
     username,
@@ -30,10 +32,11 @@ export const saveToken = (token: string, navigate: () => void) => {
     navigate();
 };
 
-export const logout = (callback:()=> void) => {
+export const logout = (callback: () => void) => {
     localStorage.removeItem(JWT_TOKEN);
     callback();
 };
+
 export const isAuthenticated = () => {
     const token = localStorage.getItem(JWT_TOKEN); // if present returns token else null
 
